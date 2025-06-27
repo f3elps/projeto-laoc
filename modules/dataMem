@@ -1,0 +1,36 @@
+module dataMEM (
+    input wire clk,
+    input wire reset,
+    input wire EscMEM,          // Habilita escrita
+    input wire LerMEM,          // Habilita leitura
+    input wire [7:0] address,   // Endereço de acesso
+    input wire [7:0] write_data, // Dado para escrita
+    output reg [7:0] read_data  // Dado lido
+);
+
+
+    // Memória de 256 posições de 8 bits
+    reg [7:0] memory[0:255];
+    integer i;
+   
+    // Lógica de escrita na borda de subida
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+             for (i = 0; i < 256; i = i + 1) begin
+                memory[i] <= 8'h00;
+            end
+        end else if (EscMEM) begin
+            memory[address] <= write_data;
+        end
+    end
+
+
+    // Lógica de leitura na borda de descida
+    always @(negedge clk) begin
+        if (LerMEM) begin
+            read_data <= memory[address];
+        end
+    end
+
+
+endmodule
